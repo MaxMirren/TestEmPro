@@ -1,6 +1,7 @@
 package com.testem.maxm.testempro.connectivity;
 
 import com.testem.maxm.testempro.AuthActivity;
+import com.testem.maxm.testempro.inapp.Cacher;
 import com.testem.maxm.testempro.inapp.WorkSpace;
 import com.testem.maxm.testempro.connectivity.Functions;
 
@@ -40,7 +41,7 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
     private Boolean isSuccess = false;
     public Functions followingFunction;
 
-    User currentUser;
+    public static User currentUser;
 
     @Override
     protected String doInBackground(String... params)
@@ -105,10 +106,11 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
                 if(rs.next())
                 {
                     createUser(rs);
+                    Cacher cacher = new Cacher();
+                    cacher.execute();
                     info = "Hello, " + currentUser.name;
                     isSuccess=true;
                     reportSessionStarted();
-                    //con.close();
                 }
                 else
                 {

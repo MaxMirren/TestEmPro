@@ -2,6 +2,7 @@ package com.testem.maxm.testempro.connectivity;
 
 import com.testem.maxm.testempro.AuthActivity;
 import com.testem.maxm.testempro.inapp.WorkSpace;
+import com.testem.maxm.testempro.connectivity.Functions;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -145,7 +146,7 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
     private String reportSessionStarted () {
         try
         {
-            String query = "INSERT INTO report_teachers (user_id, surname, institute, caf, time, action, device) VALUES ('"  +
+            String query = "INSERT INTO report_teachers (teacher_id, surname, institute, caf, time, action, device) VALUES ('"  +
                     currentUser.id + "', N'" + currentUser.surname + "', N'" + currentUser.institute + "', N'" + currentUser.caf +
                     "', '" + getDateTime() + "', 'Sign IN', '" + currentUser.deviceID + "')";
             Statement stmt = con.createStatement();

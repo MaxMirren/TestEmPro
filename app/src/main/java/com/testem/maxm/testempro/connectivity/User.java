@@ -1,19 +1,5 @@
 package com.testem.maxm.testempro.connectivity;
 
-import android.content.Context;
-import android.view.View;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
@@ -21,28 +7,31 @@ import java.io.Serializable;
  */
 
 public final class User implements Serializable{
-    Integer id;
-    String name;
-    String surname;
-    String secondName;
-    String institute;
-    String caf;
-    String email;
-    String password;
-    String tests;
-    String subjects;
-    String cellNumber;
-    String deviceID;
+
+    private static final long serialVersionUID = 23109753;
+
+    public Integer id;
+    public String name;
+    public String surname;
+    public String secondName;
+    public String institute;
+    public String caf;
+    public String email;
+    public String password;
+    public String tests;
+    public String subjects;
+    public String cellNumber;
+    public String deviceID;
 
     public User(Integer id, String name, String surname, String secondName, String institute, String caf, String email, String password, String tests, String subjects, String cellNumber, String deviceID) {
         this.id = id;
-        this.name = name;
-        this.surname = surname;
-        this.secondName = secondName;
+        this.name = name.replaceAll(" ", "");
+        this.surname = surname.replaceAll(" ", "");
+        this.secondName = secondName.replaceAll(" ", "");
         this.institute = institute;
         this.caf = caf;
-        this.email = email;
-        this.password = password;
+        this.email = email.replaceAll(" ", "");
+        this.password = password.replaceAll(" ", "");
         this.tests = tests;
         this.subjects = subjects;
         this.cellNumber = cellNumber;

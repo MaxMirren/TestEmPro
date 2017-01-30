@@ -1,21 +1,17 @@
 package com.testem.maxm.testempro.inapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.constraint.solver.Cache;
 
+import com.testem.maxm.testempro.AuthActivity;
 import com.testem.maxm.testempro.connectivity.ServerInterface;
 import com.testem.maxm.testempro.connectivity.User;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
@@ -26,53 +22,57 @@ import java.io.ObjectOutputStream;
 public final class Cacher extends AsyncTask <Void, Void, Void> {
 
     private static String information = "";
-    User user;
+
+    public static boolean isReading = true;
 
     @Override
     protected Void doInBackground(Void... params) {
-        writeUserToFile();
+        if (isReading) {
+            readUserFromFile();
+        }
+            else {
+            writeUserToFile();
+        }
         return null;
     }
 
     public void writeUserToFile() {
-        File file = new File(ServerInterface.authActivity.getCacheDir(), "user.tep");
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         try {
             FileOutputStream fileOutputStream = ServerInterface.authActivity.openFileOutput("user.tep", Context.MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(ServerInterface.currentUser);
+            objectOutputStream.flush();
             objectOutputStream.close();
             fileOutputStream.close();
-            information = "User successfully cached!";
+            //information = "User successfully cached!";
         }
         catch (IOException e) {
-            information = e.getMessage().toString();
+            information = e.getMessage();
         }
     }
 
 
-    public void readUserFromFile() {
+    private void readUserFromFile() {
         try {
             FileInputStream fileInputStream = ServerInterface.authActivity.openFileInput("user.tep");
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            user = (User) objectInputStream.readObject();
+            ServerInterface.currentUser = (User) objectInputStream.readObject();
             objectInputStream.close();
             fileInputStream.close();
+            //return ServerInterface.currentUser;
         }
         catch (IOException e) {
-            information = e.getMessage().toString();
+            information = e.getMessage();
         }
-        catch (ClassNotFoundException e) {
-            information = e.getMessage().toString();
+       catch (ClassNotFoundException e) {
+            information = e.getMessage();
         }
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        ServerInterface.authActivity.makeToast(information);
+        if (information != "") {
+            ServerInterface.authActivity.makeToast(information);
+        }
     }
 }

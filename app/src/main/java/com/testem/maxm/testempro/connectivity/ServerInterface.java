@@ -3,7 +3,6 @@ package com.testem.maxm.testempro.connectivity;
 import com.testem.maxm.testempro.AuthActivity;
 import com.testem.maxm.testempro.inapp.Cacher;
 import com.testem.maxm.testempro.inapp.WorkSpace;
-import com.testem.maxm.testempro.connectivity.Functions;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -107,6 +106,7 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
                 {
                     createUser(rs);
                     Cacher cacher = new Cacher();
+                    Cacher.isReading =false;
                     cacher.execute();
                     info = "Hello, " + currentUser.name;
                     isSuccess=true;
@@ -191,8 +191,9 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
             case AUTHENTIFIER:
                 authActivity.makeToast(info);
                 Intent intent = new Intent(authActivity, WorkSpace.class);
-                intent.putExtra(NAME, currentUser.name);
+                //intent.putExtra(NAME, currentUser.name);
                 authActivity.startActivity(intent);
+                authActivity.finish();
                 break;
             case REPORT_END:
                 if (info != "") {

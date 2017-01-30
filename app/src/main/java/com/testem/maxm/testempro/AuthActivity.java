@@ -2,7 +2,12 @@ package com.testem.maxm.testempro;
 
 import com.testem.maxm.testempro.connectivity.ServerInterface;
 import com.testem.maxm.testempro.connectivity.Functions;
+import com.testem.maxm.testempro.inapp.WorkSpace;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
@@ -19,14 +24,16 @@ public class AuthActivity extends AppCompatActivity {
     private static final String PASSWORD = "PASSWORD";                      //code for password field data in instance state
     private static final String SIGN_IN_ENABLED = "SIGN_IN_ENABLED";        //code for enable state of sign in button in instance state
 
-    private static EditText emailEditText;                                  //relative of email field
-    private static EditText passwordEditText;                               //relative of password field
-    private static Button signIn;                                           //relative of sign in button
+    private EditText emailEditText;                                         //relative of email field
+    private EditText passwordEditText;                                      //relative of password field
+    private Button signIn;                                                  //relative of sign in button
 
     private static String emailTyped = "";                                  //email field data for instance state
     private static String passwordTyped = "";                               //password field data for instance state
     private static Boolean signInEnabled = false;                           //sign in button data for instance state
+    private Boolean lockGoingBack = true;                                   //sets the availability of coming back to the previous activity
 
+    private  ServerInterface serverInterface;                               //a way to use object's methods
     //private GoogleApiClient client;                                         //represents google api interaction
 
 
@@ -36,6 +43,23 @@ public class AuthActivity extends AppCompatActivity {
         setContentView(R.layout.auth_activity);
         connectVariablesToViews();
         listenToFields();
+    }
+
+    /**
+     * Prevents going to the previous activity when it is needed
+     */
+    @Override
+    public void onBackPressed() {
+        if (lockGoingBack) {
+            Intent intent = new Intent(this, WorkSpace.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra("Close this app", true);
+            startActivity(intent);
+            finish();
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 
     /**
@@ -72,6 +96,21 @@ public class AuthActivity extends AppCompatActivity {
         emailEditText.setText(emailTyped);
         passwordEditText.setText(passwordTyped);
         signIn.setEnabled(signInEnabled);
+    }
+
+    /**
+     * Checks if internet connection is available
+     * @return the result of check
+     */
+    private Boolean checkInternetConnection () {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if ((networkInfo != null) && networkInfo.isConnected()) {
+            return true;
+        } else {
+            makeToast("There is no internet connection");
+            return false;
+        }
     }
 
     /**
@@ -147,16 +186,21 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     /**
-     * Sets up method when a view was clicked
+     * Sets up method when a view was clicked (Calls async task to authenticate user via SQL Server)
      * @param view represents element that was clicked
      */
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.sign_in:
-                ServerInterface serverInterface = new ServerInterface();
-                serverInterface.sendData(this, emailTyped, passwordTyped);
-                serverInterface.followingFunction = Functions.AUTHENTIFIER;
-                serverInterface.execute("");
+                if (checkInternetConnection()) {
+                    serverInterface = new ServerInterface();
+                    serverInterface.sendData(this, emailTyped, passwordTyped);
+                    serverInterface.followingFunction = Functions.AUTHENTIFIER;
+                    serverInterface.execute("");
+                }
+                else {
+                    break;
+                }
                 break;
             default:
                 break;

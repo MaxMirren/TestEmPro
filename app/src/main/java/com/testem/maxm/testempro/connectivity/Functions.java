@@ -5,6 +5,7 @@ package com.testem.maxm.testempro.connectivity;
  */
 
 public enum Functions {
+    AUTHENTIFIER_CACHE,
     AUTHENTIFIER,
     REPORT_END,
     VIEWER,

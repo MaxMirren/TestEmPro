@@ -1,14 +1,11 @@
 package com.testem.maxm.testempro.inapp;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 
-import com.testem.maxm.testempro.AuthActivity;
 import com.testem.maxm.testempro.connectivity.ServerInterface;
 import com.testem.maxm.testempro.connectivity.User;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,7 +33,7 @@ public final class Cacher extends AsyncTask <Void, Void, Void> {
         return null;
     }
 
-    public void writeUserToFile() {
+    private void writeUserToFile() {
         try {
             FileOutputStream fileOutputStream = ServerInterface.authActivity.openFileOutput("user.tep", Context.MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
@@ -59,7 +56,6 @@ public final class Cacher extends AsyncTask <Void, Void, Void> {
             ServerInterface.currentUser = (User) objectInputStream.readObject();
             objectInputStream.close();
             fileInputStream.close();
-            //return ServerInterface.currentUser;
         }
         catch (IOException e) {
             information = e.getMessage();
@@ -71,7 +67,7 @@ public final class Cacher extends AsyncTask <Void, Void, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        if (information != "") {
+        if (!information.equals("")) {
             ServerInterface.authActivity.makeToast(information);
         }
     }

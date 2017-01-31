@@ -4,7 +4,6 @@ import com.testem.maxm.testempro.AuthActivity;
 import com.testem.maxm.testempro.connectivity.Functions;
 import com.testem.maxm.testempro.connectivity.ServerInterface;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -58,13 +57,13 @@ public final class WorkSpace extends AppCompatActivity {
     public void userCacheChecker() {
             readUserFromFile();
             if (ServerInterface.currentUser != null) {
-                if (ServerInterface.currentUser.deviceID.equals(getDeviceId())) {
+                if (ServerInterface.currentUser.getDeviceID().equals(getDeviceId())) {
                     makeToast("Yeaaaaaah");
                     setUpSuccessfulCheckResult();
                 }
                 else {
                     ServerInterface.signIn = true;
-                    makeToast("Server: " + ServerInterface.currentUser.deviceID + " real is: " + getDeviceId());
+                    makeToast("Server: " + ServerInterface.currentUser.getDeviceID() + " real is: " + getDeviceId());
                     setUpUnsuccessfulCheckResult();
                 }
             }

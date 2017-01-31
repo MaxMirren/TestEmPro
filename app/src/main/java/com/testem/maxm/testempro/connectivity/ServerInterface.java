@@ -39,7 +39,7 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
 
     /**
      * The main function after execute: determines which function is going to be completed
-     * @param params
+     * @param params string
      * @return null
      */
     @Override
@@ -120,7 +120,7 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
                 if(rs.next())
                 {
                     createUser(rs);
-                    info = "Hello, " + currentUser.name;
+                    info = "Hello, " + currentUser.getName();
                     reportSessionStarted();
                 }
                 else
@@ -169,8 +169,8 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
         try
         {
             String query = "INSERT INTO report_teachers (teacher_id, surname, institute, caf, time, action, device) VALUES ('"  +
-                    currentUser.id + "', N'" + currentUser.surname + "', N'" + currentUser.institute + "', N'" + currentUser.caf +
-                    "', '" + getDateTime() + "', 'SIGN_IN', '" + currentUser.deviceID + "')";
+                    currentUser.getId() + "', N'" + currentUser.getSurname() + "', N'" + currentUser.getInstitute() + "', N'" + currentUser.getCaf() +
+                    "', '" + getDateTime() + "', 'SIGN_IN', '" + currentUser.getDeviceID() + "')";
             Statement stmt = con.createStatement();
             stmt.executeUpdate(query);
         }
@@ -209,8 +209,8 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
             try
             {
                 String query = "INSERT INTO report_teachers (teacher_id, surname, institute, caf, time, action, device) VALUES ('"  +
-                        currentUser.id + "', N'" + currentUser.surname + "', N'" + currentUser.institute + "', N'" + currentUser.caf +
-                        "', '" + getDateTime() + "', 'LAUNCH', '" + currentUser.deviceID + "')";
+                        currentUser.getId() + "', N'" + currentUser.getSurname() + "', N'" + currentUser.getInstitute() + "', N'" + currentUser.getCaf() +
+                        "', '" + getDateTime() + "', 'LAUNCH', '" + currentUser.getDeviceID() + "')";
                 Statement stmt = con.createStatement();
                 stmt.executeUpdate(query);
             }

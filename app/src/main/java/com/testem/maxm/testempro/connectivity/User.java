@@ -10,18 +10,18 @@ public final class User implements Serializable{
 
     private static final long serialVersionUID = 23109753;
 
-    public Integer id;
-    public String name;
-    public String surname;
-    public String secondName;
-    public String institute;
-    public String caf;
-    public String email;
-    public String password;
-    public String tests;
-    public String subjects;
-    public String cellNumber;
-    public String deviceID;
+    private Integer id;
+    private String name;
+    private String surname;
+    private String secondName;
+    private String institute;
+    private String caf;
+    private String email;
+    private String password;
+    private String tests;
+    private String subjects;
+    private String cellNumber;
+    private String deviceID;
 
     public User(Integer id, String name, String surname, String secondName, String institute, String caf, String email, String password, String tests, String subjects, String cellNumber, String deviceID) {
         this.id = id;
@@ -38,5 +38,51 @@ public final class User implements Serializable{
         this.deviceID = deviceID;
     }
 
+    public Integer getId() {
+        return id;
+    }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public String getSecondName() {
+        return secondName;
+    }
+
+    public String getInstitute() {
+        return institute;
+    }
+
+    public String getCaf() {
+        return caf;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getTests() {
+        return tests;
+    }
+
+    public String getSubjects() {
+        return subjects;
+    }
+
+    public String getCellNumber() {
+        return cellNumber;
+    }
+
+    public String getDeviceID() {
+        return deviceID;
+    }
 }

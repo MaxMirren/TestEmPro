@@ -4,7 +4,6 @@ import com.testem.maxm.testempro.connectivity.ServerInterface;
 import com.testem.maxm.testempro.connectivity.Functions;
 import com.testem.maxm.testempro.inapp.WorkSpace;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -32,7 +31,6 @@ public class AuthActivity extends AppCompatActivity {
     private static String emailTyped = "";                                  //email field data for instance state
     private static String passwordTyped = "";                               //password field data for instance state
     private static Boolean signInEnabled = false;                           //sign in button data for instance state
-    private Boolean lockGoingBack = true;                                   //sets the availability of coming back to the previous activity
 
     private  ServerInterface serverInterface;                               //a way to use object's methods
     //private GoogleApiClient client;                                         //represents google api interaction
@@ -52,16 +50,11 @@ public class AuthActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        if (lockGoingBack) {
             Intent intent = new Intent(this, WorkSpace.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.putExtra("Close this app", true);
             startActivity(intent);
             finish();
-        }
-        else {
-            super.onBackPressed();
-        }
     }
 
     /**

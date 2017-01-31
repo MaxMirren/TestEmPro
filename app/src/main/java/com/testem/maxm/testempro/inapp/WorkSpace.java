@@ -1,10 +1,14 @@
 package com.testem.maxm.testempro.inapp;
 
 import com.testem.maxm.testempro.AuthActivity;
+import com.testem.maxm.testempro.connectivity.Functions;
 import com.testem.maxm.testempro.connectivity.ServerInterface;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +31,8 @@ public final class WorkSpace extends AppCompatActivity {
 
     TextView textView;
     public static WorkSpace workSpace;
+    ServerInterface serverInterface;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,31 +43,41 @@ public final class WorkSpace extends AppCompatActivity {
             return;
         }
         workSpace = this;
-        userCacheChecker();
+        if (!ServerInterface.signIn) {
+            userCacheChecker();
+        }
+        else {
+            setUpSuccessfulCheckResult();
+        }
     }
 
     /**
-     * Check if it is important to have a sign in
-     * @return result of file being and content
+     * Checks if it is important to have a sign in
+     *
      */
     public void userCacheChecker() {
-        readUserFromFile();
-        if (ServerInterface.currentUser != null) {
-            if (ServerInterface.currentUser.deviceID.equals(getDeviceId())) {
-                makeToast("Yeaaaaaah");
-                setUpSuccessfulCheckResult();
+            readUserFromFile();
+            if (ServerInterface.currentUser != null) {
+                if (ServerInterface.currentUser.deviceID.equals(getDeviceId())) {
+                    makeToast("Yeaaaaaah");
+                    setUpSuccessfulCheckResult();
+                }
+                else {
+                    ServerInterface.signIn = true;
+                    makeToast("Server: " + ServerInterface.currentUser.deviceID + " real is: " + getDeviceId());
+                    setUpUnsuccessfulCheckResult();
+                }
             }
             else {
-                makeToast("Server: " + ServerInterface.currentUser.deviceID + " real is: " + getDeviceId());
+                //makeToast("currentUser = null");
+                ServerInterface.signIn = true;
                 setUpUnsuccessfulCheckResult();
             }
-        }
-        else {
-            //makeToast("currentUser = null");
-            setUpUnsuccessfulCheckResult();
-        }
     }
 
+    /**
+     * Checks if there a user.tep file and gets its object using deserialization
+     */
     public void readUserFromFile() {
         try {
             FileInputStream fileInputStream = openFileInput("user.tep");
@@ -73,23 +89,35 @@ public final class WorkSpace extends AppCompatActivity {
         }
         catch (IOException e) {
             //makeToast(e.getMessage());
-           setUpUnsuccessfulCheckResult();
+            ServerInterface.signIn = true;
+            setUpUnsuccessfulCheckResult();
         }
        catch (ClassNotFoundException e) {
+           ServerInterface.signIn = true;
            makeToast(e.getMessage());
         }
     }
 
+    /**
+     * Set up if cache authentication was successful
+     */
     public void setUpSuccessfulCheckResult () {
-        this.getIntent().setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        ServerInterface.authActivity.finish();
+        if (hasInternetConnection() && !ServerInterface.signIn)  {
+            serverInterface = new ServerInterface();
+            serverInterface.followingFunction = Functions.AUTHENTIFIER_CACHE;
+            serverInterface.execute();
+        }
         connectVariablesToViews();
     }
 
+    /**
+     * Set up if cache authentication was unsuccessful
+     */
     public void setUpUnsuccessfulCheckResult () {
         Intent intent = new Intent(this, AuthActivity.class);
         this.startActivity(intent);
     }
+
     /**
      * Connects on-form objects to in-class variables
      */
@@ -98,11 +126,17 @@ public final class WorkSpace extends AppCompatActivity {
     }
 
     /**
-     * Gets caller-activity data
+     * Checks if internet connection is available
+     * @return the result of check
      */
-    private void restoreIntent() {
-        Intent intent = getIntent();
-        textView.setText(intent.getStringExtra(ServerInterface.NAME));
+    private Boolean hasInternetConnection() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if ((networkInfo != null) && networkInfo.isConnected()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

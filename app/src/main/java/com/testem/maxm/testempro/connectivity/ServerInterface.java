@@ -5,6 +5,7 @@ import com.testem.maxm.testempro.inapp.Cacher;
 import com.testem.maxm.testempro.inapp.WorkSpace;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.StrictMode;
@@ -41,6 +42,7 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
     public Functions followingFunction;
 
     public static User currentUser;
+    public static Boolean signIn = false;
 
     @Override
     protected String doInBackground(String... params)
@@ -48,6 +50,9 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
         switch (followingFunction) {
             case AUTHENTIFIER:
                 checkLogIn();
+                break;
+            case AUTHENTIFIER_CACHE:
+                reportSessionStartedFromCache();
                 break;
             case REPORT_END:
                 break;
@@ -150,7 +155,7 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
         {
             String query = "INSERT INTO report_teachers (teacher_id, surname, institute, caf, time, action, device) VALUES ('"  +
                     currentUser.id + "', N'" + currentUser.surname + "', N'" + currentUser.institute + "', N'" + currentUser.caf +
-                    "', '" + getDateTime() + "', 'Sign IN', '" + currentUser.deviceID + "')";
+                    "', '" + getDateTime() + "', 'SIGN_IN', '" + currentUser.deviceID + "')";
             Statement stmt = con.createStatement();
             stmt.executeUpdate(query);
         }
@@ -171,8 +176,30 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
         return null;
     }
 
+    private void reportSessionStartedFromCache() {
+        con = connectionclass(USERNAME, PASSWORD, DATABASE, IP);        // Connect to database
+        if (con == null)
+        {
+            info = "Check Your Internet Access!";
+        }
+        else {
+            try
+            {
+                String query = "INSERT INTO report_teachers (teacher_id, surname, institute, caf, time, action, device) VALUES ('"  +
+                        currentUser.id + "', N'" + currentUser.surname + "', N'" + currentUser.institute + "', N'" + currentUser.caf +
+                        "', '" + getDateTime() + "', 'LAUNCH', '" + currentUser.deviceID + "')";
+                Statement stmt = con.createStatement();
+                stmt.executeUpdate(query);
+            }
+            catch (Exception ex)
+            {
+                info = ex.getMessage().toString() + "  ";
+            }
+        }
+    }
 
-    public void sendData (AuthActivity activity, String mail, String passwd) {
+
+    public void getAuthActivityAndTypedData(AuthActivity activity, String mail, String passwd) {
         authActivity = activity;
         email = mail;
         password = passwd;
@@ -193,7 +220,9 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
                 Intent intent = new Intent(authActivity, WorkSpace.class);
                 //intent.putExtra(NAME, currentUser.name);
                 authActivity.startActivity(intent);
-                authActivity.finish();
+                break;
+            case AUTHENTIFIER_CACHE:
+
                 break;
             case REPORT_END:
                 if (info != "") {

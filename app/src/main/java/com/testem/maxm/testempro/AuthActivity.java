@@ -4,6 +4,7 @@ import com.testem.maxm.testempro.connectivity.ServerInterface;
 import com.testem.maxm.testempro.connectivity.Functions;
 import com.testem.maxm.testempro.inapp.WorkSpace;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -44,6 +45,7 @@ public class AuthActivity extends AppCompatActivity {
         connectVariablesToViews();
         listenToFields();
     }
+
 
     /**
      * Prevents going to the previous activity when it is needed
@@ -102,7 +104,7 @@ public class AuthActivity extends AppCompatActivity {
      * Checks if internet connection is available
      * @return the result of check
      */
-    private Boolean checkInternetConnection () {
+    private Boolean hasInternetConnection() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if ((networkInfo != null) && networkInfo.isConnected()) {
@@ -192,9 +194,9 @@ public class AuthActivity extends AppCompatActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.sign_in:
-                if (checkInternetConnection()) {
+                if (hasInternetConnection()) {
                     serverInterface = new ServerInterface();
-                    serverInterface.sendData(this, emailTyped, passwordTyped);
+                    serverInterface.getAuthActivityAndTypedData(this, emailTyped, passwordTyped);
                     serverInterface.followingFunction = Functions.AUTHENTIFIER;
                     serverInterface.execute("");
                 }

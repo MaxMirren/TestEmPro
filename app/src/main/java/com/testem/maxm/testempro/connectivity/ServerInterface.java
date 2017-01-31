@@ -5,7 +5,6 @@ import com.testem.maxm.testempro.inapp.Cacher;
 import com.testem.maxm.testempro.inapp.WorkSpace;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.StrictMode;
@@ -20,30 +19,29 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- * Created by Mr_95 on Jan 29, 2017.
- */
-
 public final class ServerInterface extends AsyncTask<String,String,String> {
 
-    public static final String NAME = "NAME";
+    final private static String USERNAME = "testemadmin";               //SQL Connection Data - name
+    final private static String PASSWORD = "su";                        //SQL Connection Data - password
+    final private static String DATABASE = "testem";                    //SQL Connection Data - database
+    final private static String IP = "5.101.194.75";                    //SQL Connection Data - IPV4 address of server
 
-    private Connection con;
-    public static AuthActivity authActivity;
+    private Connection con;                                             //SQL Connection Data transferring variable
+    public Functions followingFunction;                                 //Determines which function is needed to be completed
+    public static User currentUser;                                     //Determines all fields of current user
+    public static Boolean signIn = false;                               //Determines if this is the first sign in into application
+    private static String info = "";                                    //Contents the information about SQL status queries
 
-    final String USERNAME = "testemadmin";
-    final String PASSWORD = "su";
-    final String DATABASE = "testem";
-    final String IP = "5.101.194.75";
+    public static AuthActivity authActivity;                            //Reference to the AuthActivity main element
+    private static String email;                                        //Represents typed email in AuthActivity
+    private static String password;                                     //Represents typed password in AuthActivity
 
-    public String info = "";
-    public String email, password;
-    private Boolean isSuccess = false;
-    public Functions followingFunction;
 
-    public static User currentUser;
-    public static Boolean signIn = false;
-
+    /**
+     * The main function after execute: determines which function is going to be completed
+     * @param params
+     * @return null
+     */
     @Override
     protected String doInBackground(String... params)
     {
@@ -59,11 +57,19 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
             default:
                 break;
         }
-        return info;
+        return null;
     }
 
+    /**
+     *
+     * @param user SQL Connection Data - name
+     * @param password SQL Connection Data - password
+     * @param database SQL Connection Data - database
+     * @param server SQL Connection Data - IPV4 address of server
+     * @return connection status data
+     */
     @SuppressLint("NewApi")
-    public Connection connectionclass(String user, String password, String database, String server)
+    public Connection connectionClass(String user, String password, String database, String server)
     {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -93,11 +99,15 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
         return connection;
     }
 
-
+    /**
+     * Checks if email and password are typed properly and then completes following functions
+     * to create new user if there was a match
+     * @return null
+     */
     private String checkLogIn () {
         try
         {
-            con = connectionclass(USERNAME, PASSWORD, DATABASE, IP);        // Connect to database
+            con = connectionClass(USERNAME, PASSWORD, DATABASE, IP);        // Connect to database
             if (con == null)
             {
                 info = "Check Your Internet Access!";
@@ -110,29 +120,27 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
                 if(rs.next())
                 {
                     createUser(rs);
-                    Cacher cacher = new Cacher();
-                    Cacher.isReading =false;
-                    cacher.execute();
                     info = "Hello, " + currentUser.name;
-                    isSuccess=true;
                     reportSessionStarted();
                 }
                 else
                 {
                     info = "Invalid Credentials!";
-                    isSuccess = false;
                 }
             }
         }
         catch (Exception ex)
         {
-            isSuccess = false;
             info = ex.getMessage().toString() + "  ";
             info = ex.toString();
         }
         return null;
     }
 
+    /**
+     * Creates new user to work with and caches object's data to file
+     * @param resultSet
+     */
     private void createUser(ResultSet resultSet) {
         try {
             int id = resultSet.getInt("id");
@@ -145,11 +153,18 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
             String subjects = resultSet.getString("subjects");
             String cellNumber = resultSet.getString("cell_number");
             currentUser = new User(id, name, surname, secondName, institute, caf, email, password, tests, subjects, cellNumber, authActivity.getDeviceId());
+            Cacher cacher = new Cacher();
+            Cacher.isReading =false;
+            cacher.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Adds a record to report_teachers.dbo with session's start data content
+     * @return null
+     */
     private String reportSessionStarted () {
         try
         {
@@ -166,6 +181,10 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
         return null;
     }
 
+    /**
+     * Adds a record to report_teachers.dbo with session's end data content
+     * @return null
+     */
     private String reportSessionEnded() {
         try {
             con.close();
@@ -176,8 +195,12 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
         return null;
     }
 
+    /**
+     * Adds a record to report_teachers.dbo with session's (app-launching) data content
+     * @return null
+     */
     private void reportSessionStartedFromCache() {
-        con = connectionclass(USERNAME, PASSWORD, DATABASE, IP);        // Connect to database
+        con = connectionClass(USERNAME, PASSWORD, DATABASE, IP);        // Connect to database
         if (con == null)
         {
             info = "Check Your Internet Access!";
@@ -198,13 +221,22 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
         }
     }
 
-
+    /**
+     * Interface to get AuthActivity data
+     * @param activity AuthActivity.this object
+     * @param mail typed in field email
+     * @param passwd typed in filed password
+     */
     public void getAuthActivityAndTypedData(AuthActivity activity, String mail, String passwd) {
         authActivity = activity;
         email = mail;
         password = passwd;
     }
 
+    /**
+     * Gets current exact date and time
+     * @return formatted date and time
+     */
     private String getDateTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -212,13 +244,15 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
         return dateFormat.format(date);
     }
 
+    /** Completes and ends up functions dependently on previously selected following function
+     * @param s
+     */
     @Override
     protected void onPostExecute(String s) {
         switch (followingFunction) {
             case AUTHENTIFIER:
                 authActivity.makeToast(info);
                 Intent intent = new Intent(authActivity, WorkSpace.class);
-                //intent.putExtra(NAME, currentUser.name);
                 authActivity.startActivity(intent);
                 break;
             case AUTHENTIFIER_CACHE:

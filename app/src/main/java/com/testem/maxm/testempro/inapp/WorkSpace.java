@@ -8,10 +8,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,10 +33,12 @@ import java.io.ObjectInputStream;
 
 public final class WorkSpace extends AppCompatActivity {
 
-    TextView textView;
     public static WorkSpace workSpace;
     ServerInterface serverInterface;
 
+    private TextView textView;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,13 +64,13 @@ public final class WorkSpace extends AppCompatActivity {
     public void userCacheChecker() {
             readUserFromFile();
             if (ServerInterface.currentUser != null) {
-                if (ServerInterface.currentUser.getDeviceID().equals(getDeviceId())) {
+                if (ServerInterface.currentUser.getDeviceID().equals(getDeviceSerialNumber())) {
                     makeToast("Yeaaaaaah");
                     setUpSuccessfulCheckResult();
                 }
                 else {
                     ServerInterface.signIn = true;
-                    makeToast("Server: " + ServerInterface.currentUser.getDeviceID() + " real is: " + getDeviceId());
+                    makeToast("Server: " + ServerInterface.currentUser.getDeviceID() + " real is: " + getDeviceSerialNumber());
                     setUpUnsuccessfulCheckResult();
                 }
             }
@@ -121,7 +128,38 @@ public final class WorkSpace extends AppCompatActivity {
      * Connects on-form objects to in-class variables
      */
     private void connectVariablesToViews() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_work_space);
+        setSupportActionBar(toolbar);
+        drawerLayout = (DrawerLayout) findViewById(R.id.work_space_drawer_layout);
+        setSidebar();
         textView = (TextView) findViewById(R.id.textView);
+    }
+
+    /**
+     * Sets the left sidebar
+     */
+    private void setSidebar() {
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
+        try {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Describes the action to complete when the option item is selected
+     * @param item item selected
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -142,9 +180,9 @@ public final class WorkSpace extends AppCompatActivity {
      * Gets device unique number
      * @return obtained device number
      */
-    public String getDeviceId() {
-        TelephonyManager tm = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-        String number = tm.getDeviceId();
+    public String getDeviceSerialNumber() {
+        //TelephonyManager tm = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+        String number = Build.SERIAL;
         return number;
     }
 

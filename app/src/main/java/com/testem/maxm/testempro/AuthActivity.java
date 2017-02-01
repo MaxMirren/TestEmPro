@@ -8,9 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -215,8 +215,8 @@ public class AuthActivity extends AppCompatActivity {
      * @return obtained device number
      */
     public String getDeviceId() {
-        TelephonyManager tm = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-        String number = tm.getDeviceId();
+        //TelephonyManager tm = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+        String number = Build.SERIAL;
         return number;
     }
 }

@@ -2,10 +2,6 @@ package com.testem.maxm.testempro.connectivity;
 
 import java.io.Serializable;
 
-/**
- * Created by Mr_95 on Jan 24, 2017.
- */
-
 public final class User implements Serializable{
 
     private static final long serialVersionUID = 23109753;

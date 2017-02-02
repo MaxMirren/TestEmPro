@@ -3,6 +3,7 @@ package com.testem.maxm.testempro.inapp;
 import com.testem.maxm.testempro.AuthActivity;
 import com.testem.maxm.testempro.connectivity.Functions;
 import com.testem.maxm.testempro.connectivity.ServerInterface;
+import com.testem.maxm.testempro.inapp.tabs.*;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,25 +12,24 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.telephony.TelephonyManager;
 import android.view.MenuItem;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.testem.maxm.testempro.R;
 import com.testem.maxm.testempro.connectivity.User;
+import com.testem.maxm.testempro.inapp.tabs.ViewPagerAdapter;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-
-/**
- * Created by Mr_95 on Jan 29, 2017.
- */
 
 public final class WorkSpace extends AppCompatActivity {
 
@@ -39,6 +39,9 @@ public final class WorkSpace extends AppCompatActivity {
     private TextView textView;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private ViewPagerAdapter viewPagerAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -132,6 +135,14 @@ public final class WorkSpace extends AppCompatActivity {
         setSupportActionBar(toolbar);
         drawerLayout = (DrawerLayout) findViewById(R.id.work_space_drawer_layout);
         setSidebar();
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPagerAdapter.addFragments(new HistoryTests(), getResources().getString(R.string.history_tests));
+        viewPagerAdapter.addFragments(new DraftTests(), getResources().getString(R.string.drafts_tests));
+        viewPagerAdapter.addFragments(new UpcomingTests(), getResources().getString(R.string.upcoming_tests));
+        viewPager.setAdapter(viewPagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
         textView = (TextView) findViewById(R.id.textView);
     }
 

@@ -12,10 +12,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-/**
- * Created by Mr_95 on Jan 29, 2017.
- */
-
 public final class Cacher extends AsyncTask <Void, Void, Void> {
 
     private static String information = "";

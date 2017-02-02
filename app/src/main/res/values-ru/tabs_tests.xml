@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="history_tests">История</string>
+    <string name="drafts_tests">Черновики</string>
+    <string name="upcoming_tests">Будущие</string>
+</resources>

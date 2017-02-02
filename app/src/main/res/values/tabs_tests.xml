@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="history_tests">History</string>
+    <string name="drafts_tests">Drafts</string>
+    <string name="upcoming_tests">Upcoming</string>
+</resources>

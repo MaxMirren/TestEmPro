@@ -24,13 +24,13 @@ public class AuthActivity extends AppCompatActivity {
     private static final String PASSWORD = "PASSWORD";                      //code for password field data in instance state
     private static final String SIGN_IN_ENABLED = "SIGN_IN_ENABLED";        //code for enable state of sign in button in instance state
 
+    public Button signIn;                                                  //relative of sign in button
     private EditText emailEditText;                                         //relative of email field
     private EditText passwordEditText;                                      //relative of password field
-    private Button signIn;                                                  //relative of sign in button
 
+    private static Boolean signInEnabled = false;                           //sign in button data for instance state
     private static String emailTyped = "";                                  //email field data for instance state
     private static String passwordTyped = "";                               //password field data for instance state
-    private static Boolean signInEnabled = false;                           //sign in button data for instance state
 
     private  ServerInterface serverInterface;                               //a way to use object's methods
     //private GoogleApiClient client;                                         //represents google api interaction
@@ -193,6 +193,7 @@ public class AuthActivity extends AppCompatActivity {
                     serverInterface.getAuthActivityAndTypedData(this, emailTyped, passwordTyped);
                     serverInterface.followingFunction = Functions.AUTHENTIFIER;
                     serverInterface.execute("");
+                    signIn.setEnabled(false);
                 }
                 else {
                     break;

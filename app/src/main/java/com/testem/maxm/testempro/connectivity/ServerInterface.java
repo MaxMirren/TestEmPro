@@ -30,7 +30,7 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
     private Connection con;                                             //SQL Connection Data transferring variable
     public Functions followingFunction;                                 //Determines which function is needed to be completed
     public static User currentUser;                                     //Determines all fields of current user
-    public static Boolean signIn = false;                               //Determines if this is the first sign in into application
+    public static Boolean signIn = false;                               //Determines if there was the first sign in into application
     private static String info = "";                                    //Contents the information about SQL status queries
 
     public static AuthActivity authActivity;                            //Reference to the AuthActivity main element
@@ -122,6 +122,7 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
                 if(rs.next())
                 {
                     createUser(rs);
+                    //authActivity.signIn.setEnabled(false);
                     info = "Hello, " + currentUser.getName();
                     reportSessionStarted();
                 }

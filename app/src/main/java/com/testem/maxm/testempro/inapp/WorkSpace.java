@@ -12,6 +12,7 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -46,6 +47,7 @@ public final class WorkSpace extends AppCompatActivity {
     private ViewPagerAdapter viewPagerAdapter;
     private TextView userNameAtDrawerHeader;
     private TextView cafNameAtDrawerHeader;
+    private View header;
 
 
     @Override
@@ -57,7 +59,8 @@ public final class WorkSpace extends AppCompatActivity {
             return;
         }
         workSpace = this;
-        if (!ServerInterface.signIn || !authorizationCompleted) {
+        //if this is not the first Sign In right after the Log in and if this user was not checked
+        if (!ServerInterface.signIn && !authorizationCompleted) {
             userCacheChecker();
         }
         else {
@@ -77,7 +80,6 @@ public final class WorkSpace extends AppCompatActivity {
             if (ServerInterface.currentUser != null) {
                 if (ServerInterface.currentUser.getDeviceID().equals(getDeviceSerialNumber())) {
                     makeToast("Yeaaaaaah");
-                    authorizationCompleted  = true;
                     setUpSuccessfulCheckResult();
                 }
                 else {
@@ -120,11 +122,12 @@ public final class WorkSpace extends AppCompatActivity {
      * Set up if cache authentication was successful
      */
     public void setUpSuccessfulCheckResult () {
-        if (hasInternetConnection() && !ServerInterface.signIn)  {
+        if (hasInternetConnection() && !ServerInterface.signIn && !authorizationCompleted)  {
             serverInterface = new ServerInterface();
             serverInterface.followingFunction = Functions.AUTHENTIFIER_CACHE;
             serverInterface.execute();
         }
+        authorizationCompleted  = true;
         connectVariablesToViews();
         setUserDataUI();
     }
@@ -153,6 +156,9 @@ public final class WorkSpace extends AppCompatActivity {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
+        header = ((NavigationView) findViewById(R.id.navigation_view)).getHeaderView(0);
+        userNameAtDrawerHeader = (TextView) header.findViewById(R.id.user_name_and_etc);
+        cafNameAtDrawerHeader = (TextView) header.findViewById(R.id.caf_name);
 
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
@@ -163,12 +169,7 @@ public final class WorkSpace extends AppCompatActivity {
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
-        userNameAtDrawerHeader = (TextView) findViewById(R.id.user_name_and_etc);
-        cafNameAtDrawerHeader = (TextView) findViewById(R.id.caf_name);
-
         textView = (TextView) findViewById(R.id.textView);
-
-
     }
 
     /**
@@ -223,8 +224,24 @@ public final class WorkSpace extends AppCompatActivity {
         String surname = ServerInterface.currentUser.getSurname() + " " + ServerInterface.currentUser.getName().charAt(0)
                 + "." + ServerInterface.currentUser.getSecondName().charAt(0) + ".";
         String cafName = ServerInterface.currentUser.getCaf();
-        userNameAtDrawerHeader.setText("Surname");
-        cafNameAtDrawerHeader.setText("Caf");
+        String[] cafWords = cafName.split(" ");
+        cafName = "";
+        for (String word : cafWords) {
+            if (word.length() > 1) {
+                cafName += word + " ";
+            }
+        }
+        if (cafName.length() > 19) {
+            cafName = "";
+            for (String word : cafWords) {
+                if (word.length() > 1) {
+                    word = word.toUpperCase();
+                    cafName += word.charAt(0)+".";
+                }
+            }
+        }
+        userNameAtDrawerHeader.setText(surname);
+        cafNameAtDrawerHeader.setText(cafName);
     }
 
     /**

@@ -19,7 +19,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.TableLayout;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +34,8 @@ import java.io.ObjectInputStream;
 public final class WorkSpace extends AppCompatActivity {
 
     public static WorkSpace workSpace;
+    public static Boolean authorizationCompleted = false;
+
     ServerInterface serverInterface;
 
     private TextView textView;
@@ -42,6 +44,9 @@ public final class WorkSpace extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private ViewPagerAdapter viewPagerAdapter;
+    private TextView userNameAtDrawerHeader;
+    private TextView cafNameAtDrawerHeader;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,11 +57,14 @@ public final class WorkSpace extends AppCompatActivity {
             return;
         }
         workSpace = this;
-        if (!ServerInterface.signIn) {
+        if (!ServerInterface.signIn || !authorizationCompleted) {
             userCacheChecker();
         }
         else {
             setUpSuccessfulCheckResult();
+        }
+        if (!authorizationCompleted) {
+            setUpUnsuccessfulCheckResult();
         }
     }
 
@@ -69,6 +77,7 @@ public final class WorkSpace extends AppCompatActivity {
             if (ServerInterface.currentUser != null) {
                 if (ServerInterface.currentUser.getDeviceID().equals(getDeviceSerialNumber())) {
                     makeToast("Yeaaaaaah");
+                    authorizationCompleted  = true;
                     setUpSuccessfulCheckResult();
                 }
                 else {
@@ -117,6 +126,7 @@ public final class WorkSpace extends AppCompatActivity {
             serverInterface.execute();
         }
         connectVariablesToViews();
+        setUserDataUI();
     }
 
     /**
@@ -133,23 +143,8 @@ public final class WorkSpace extends AppCompatActivity {
     private void connectVariablesToViews() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_work_space);
         setSupportActionBar(toolbar);
-        drawerLayout = (DrawerLayout) findViewById(R.id.work_space_drawer_layout);
-        setSidebar();
-        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        viewPagerAdapter.addFragments(new HistoryTests(), getResources().getString(R.string.history_tests));
-        viewPagerAdapter.addFragments(new DraftTests(), getResources().getString(R.string.drafts_tests));
-        viewPagerAdapter.addFragments(new UpcomingTests(), getResources().getString(R.string.upcoming_tests));
-        viewPager.setAdapter(viewPagerAdapter);
-        tabLayout.setupWithViewPager(viewPager);
-        textView = (TextView) findViewById(R.id.textView);
-    }
 
-    /**
-     * Sets the left sidebar
-     */
-    private void setSidebar() {
+        drawerLayout = (DrawerLayout) findViewById(R.id.work_space_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
@@ -158,6 +153,22 @@ public final class WorkSpace extends AppCompatActivity {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
+
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPagerAdapter.addFragments(new HistoryTests(), getResources().getString(R.string.history_tests));
+        viewPagerAdapter.addFragments(new DraftTests(), getResources().getString(R.string.drafts_tests));
+        viewPagerAdapter.addFragments(new UpcomingTests(), getResources().getString(R.string.upcoming_tests));
+        viewPager.setAdapter(viewPagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+
+        userNameAtDrawerHeader = (TextView) findViewById(R.id.user_name_and_etc);
+        cafNameAtDrawerHeader = (TextView) findViewById(R.id.caf_name);
+
+        textView = (TextView) findViewById(R.id.textView);
+
+
     }
 
     /**
@@ -204,4 +215,39 @@ public final class WorkSpace extends AppCompatActivity {
     public void makeToast(String string) {
         Toast.makeText(this, string, Toast.LENGTH_LONG).show();
     }
+
+    /**
+     * Fills up UI content with user's content
+     */
+    private void setUserDataUI () {
+        String surname = ServerInterface.currentUser.getSurname() + " " + ServerInterface.currentUser.getName().charAt(0)
+                + "." + ServerInterface.currentUser.getSecondName().charAt(0) + ".";
+        String cafName = ServerInterface.currentUser.getCaf();
+        userNameAtDrawerHeader.setText("Surname");
+        cafNameAtDrawerHeader.setText("Caf");
+    }
+
+    /**
+     * Listens to events and completes deeds
+     * @param view
+     */
+    public void eventListener (View view) {
+        switch (view.getId()) {
+            case R.id.sign_out_button:
+                authorizationCompleted = false;
+                ServerInterface.signIn = false;
+                Cacher cacher = new Cacher();
+                cacher.followingFunction = CacherFunctions.DELETE_USER_DATA;
+                cacher.execute();
+                if (hasInternetConnection()) {
+                    serverInterface = new ServerInterface();
+                    serverInterface.followingFunction = Functions.REPORT_SIGN_OUT;
+                    serverInterface.execute();
+                }
+                setUpUnsuccessfulCheckResult();
+                finish();
+                break;
+        }
+    }
+
 }

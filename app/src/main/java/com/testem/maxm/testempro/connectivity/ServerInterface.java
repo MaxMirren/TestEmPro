@@ -2,6 +2,7 @@ package com.testem.maxm.testempro.connectivity;
 
 import com.testem.maxm.testempro.AuthActivity;
 import com.testem.maxm.testempro.inapp.Cacher;
+import com.testem.maxm.testempro.inapp.CacherFunctions;
 import com.testem.maxm.testempro.inapp.WorkSpace;
 
 import android.annotation.SuppressLint;
@@ -52,7 +53,8 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
             case AUTHENTIFIER_CACHE:
                 reportSessionStartedFromCache();
                 break;
-            case REPORT_END:
+            case REPORT_SIGN_OUT:
+                reportSignOut();
                 break;
             default:
                 break;
@@ -154,7 +156,7 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
             String cellNumber = resultSet.getString("cell_number");
             currentUser = new User(id, name, surname, secondName, institute, caf, email, password, tests, subjects, cellNumber, authActivity.getDeviceId());
             Cacher cacher = new Cacher();
-            Cacher.isReading =false;
+            cacher.followingFunction = CacherFunctions.WRITE_USER_DATA;
             cacher.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -182,15 +184,29 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
     }
 
     /**
-     * Adds a record to report_teachers.dbo with session's end data content
+     * Adds a record to report_teachers.dbo with sign out data content
      * @return null
      */
-    private String reportSessionEnded() {
-        try {
-            con.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            info = e.getMessage().toString();
+    private String reportSignOut() {
+        con = connectionClass(USERNAME, PASSWORD, DATABASE, IP);        // Connect to database
+        if (con == null)
+        {
+            info = "Check Your Internet Access!";
+        }
+        else {
+            try
+            {
+                String query = "INSERT INTO report_teachers (teacher_id, surname, institute, caf, time, action, device) VALUES ('"  +
+                        currentUser.getId() + "', N'" + currentUser.getSurname() + "', N'" + currentUser.getInstitute() + "', N'" + currentUser.getCaf() +
+                        "', '" + getDateTime() + "', 'SIGN_OUT', '" + currentUser.getDeviceID() + "')";
+                Statement stmt = con.createStatement();
+                stmt.executeUpdate(query);
+                currentUser = null;
+            }
+            catch (Exception ex)
+            {
+                info = ex.getMessage().toString() + "  ";
+            }
         }
         return null;
     }
@@ -258,9 +274,9 @@ public final class ServerInterface extends AsyncTask<String,String,String> {
             case AUTHENTIFIER_CACHE:
 
                 break;
-            case REPORT_END:
-                if (info != "") {
-                    authActivity.makeToast(info);
+            case REPORT_SIGN_OUT:
+                if (!info.equals("")) {
+                    WorkSpace.workSpace.makeToast(info);
                 }
                 break;
             default:

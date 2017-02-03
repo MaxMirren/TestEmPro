@@ -2,4 +2,9 @@
 
 <resources>
     <string name="my_user_account">My account</string>
+    <string name="notifications">Notifications</string>
+    <string name="tests">Tests</string>
+    <string name="reports">Reports</string>
+    <string name="support">Support</string>
+    <string name="sign_out">Sign out</string>
 </resources>

@@ -2,4 +2,9 @@
 
 <resources>
     <string name="my_user_account">Моя учетная запись</string>
+    <string name="notifications">Уведомления</string>
+    <string name="tests">Тесты</string>
+    <string name="reports">Отчеты</string>
+    <string name="support">Поддержка</string>
+    <string name="sign_out">Выйти</string>
 </resources>

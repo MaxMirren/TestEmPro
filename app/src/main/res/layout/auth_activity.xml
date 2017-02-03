@@ -44,6 +44,7 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="20dp"
         android:id="@+id/passwordField"
+        android:textColor="@color/text_dark"
         android:hint="@string/password" />
 
     <Button
@@ -56,6 +57,7 @@
         app:layout_constraintRight_toRightOf="parent"
         android:id="@+id/sign_in"
         android:enabled="false"
+        android:textColor="@color/text_dark"
         android:onClick="onClick"/>
 
 </android.support.constraint.ConstraintLayout>

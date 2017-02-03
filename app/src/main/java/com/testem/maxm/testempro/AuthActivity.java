@@ -42,6 +42,7 @@ public class AuthActivity extends AppCompatActivity {
         setContentView(R.layout.auth_activity);
         connectVariablesToViews();
         listenToFields();
+        WorkSpace.authorizationCompleted = false;
     }
 
 

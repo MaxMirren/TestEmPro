@@ -35,7 +35,10 @@
         android:layout_marginBottom="20dp"
         android:id="@+id/emailField"
         android:hint="@string/email"
-        android:textColor="@color/text_dark"/>
+        android:textColor="@color/text_dark"
+        android:textCursorDrawable="@color/colorPrimary"
+        android:shadowColor="@color/colorPrimary"
+        android:textSize="17sp"/>
 
     <EditText
         android:layout_width="200dp"
@@ -49,7 +52,10 @@
         app:layout_constraintVertical_bias="0.5"
         android:id="@+id/passwordField"
         android:hint="@string/password"
-        android:textColor="@color/text_dark"/>
+        android:textColor="@color/text_dark"
+        android:textCursorDrawable="@color/colorPrimary"
+        android:shadowColor="@color/colorPrimary"
+        android:textSize="17sp"/>
 
     <Button
         android:text="@string/sign_in"

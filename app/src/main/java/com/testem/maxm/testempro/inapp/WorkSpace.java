@@ -11,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -34,12 +35,12 @@ import java.io.ObjectInputStream;
 
 public final class WorkSpace extends AppCompatActivity {
 
+
+    public static final String CURRENT_TAB = "CURRENT_TAB";
     public static WorkSpace workSpace;
     public static Boolean authorizationCompleted = false;
 
-    ServerInterface serverInterface;
-
-    private TextView textView;
+    private ServerInterface serverInterface;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private TabLayout tabLayout;
@@ -49,6 +50,7 @@ public final class WorkSpace extends AppCompatActivity {
     private TextView cafNameAtDrawerHeader;
     private View header;
 
+    public int currentTab = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,6 +71,26 @@ public final class WorkSpace extends AppCompatActivity {
         if (!authorizationCompleted) {
             setUpUnsuccessfulCheckResult();
         }
+    }
+
+    /**
+     * Saves changeable data when state is changed
+     * @param outState represents current state
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(CURRENT_TAB, viewPager.getCurrentItem());
+    }
+
+    /**
+     * Restores changeable data when state is changed
+     * @param savedInstanceState represents daved state
+     */
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        viewPager.setCurrentItem(savedInstanceState.getInt(CURRENT_TAB), false);
     }
 
     /**
@@ -164,12 +186,12 @@ public final class WorkSpace extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPagerAdapter.addFragments(new HistoryTests(), getResources().getString(R.string.history_tests));
-        viewPagerAdapter.addFragments(new DraftTests(), getResources().getString(R.string.drafts_tests));
+        viewPagerAdapter.addFragments(new DevelopingTests(), getResources().getString(R.string.developing_tests));
         viewPagerAdapter.addFragments(new UpcomingTests(), getResources().getString(R.string.upcoming_tests));
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
+        viewPager.setCurrentItem(1, false);
 
-        textView = (TextView) findViewById(R.id.textView);
     }
 
     /**

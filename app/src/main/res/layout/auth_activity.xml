@@ -34,7 +34,10 @@
         android:id="@+id/emailField"
         style="@style/Theme.AppCompat.DayNight"
         android:textColor="@color/text_dark"
-        android:hint="@string/email" />
+        android:hint="@string/email"
+        android:textCursorDrawable="@color/colorPrimary"
+        android:shadowColor="@color/colorPrimary"
+        android:textSize="17sp"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -48,7 +51,10 @@
         android:id="@+id/passwordField"
         style="@style/Theme.AppCompat.DayNight"
         android:textColor="@color/text_dark"
-        android:hint="@string/password" />
+        android:hint="@string/password"
+        android:textCursorDrawable="@color/colorPrimary"
+        android:shadowColor="@color/colorPrimary"
+        android:textSize="17sp"/>
 
     <Button
         android:text="@string/sign_in"

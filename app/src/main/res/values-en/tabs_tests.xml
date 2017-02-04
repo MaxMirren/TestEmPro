@@ -2,6 +2,6 @@
 
 <resources>
     <string name="history_tests">History</string>
-    <string name="drafts_tests">Drafts</string>
+    <string name="developing_tests">Developing</string>
     <string name="upcoming_tests">Upcoming</string>
 </resources>

@@ -2,6 +2,6 @@
 
 <resources>
     <string name="history_tests">История</string>
-    <string name="drafts_tests">Черновики</string>
+    <string name="developing_tests">Разработка</string>
     <string name="upcoming_tests">Будущие</string>
 </resources>

@@ -74,7 +74,8 @@
         app:pressedTranslationZ="12dp"
         tools:ignore="RtlHardcoded"
         android:visibility="invisible"
-        android:id="@+id/download_excel"/>
+        android:id="@+id/download_excel"
+        android:onClick="floatingOnClick"/>
 
 
 </android.support.constraint.ConstraintLayout>

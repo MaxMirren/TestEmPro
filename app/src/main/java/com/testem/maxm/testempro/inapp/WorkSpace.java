@@ -3,15 +3,17 @@ package com.testem.maxm.testempro.inapp;
 import com.testem.maxm.testempro.AuthActivity;
 import com.testem.maxm.testempro.connectivity.Functions;
 import com.testem.maxm.testempro.connectivity.ServerInterface;
+import com.testem.maxm.testempro.inapp.fileChooser.FileChooserActivity;
 import com.testem.maxm.testempro.inapp.tabs.*;
 
 import android.content.Context;
 import android.content.Intent;
+import android.inputmethodservice.Keyboard;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -20,6 +22,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -29,9 +32,20 @@ import com.testem.maxm.testempro.R;
 import com.testem.maxm.testempro.connectivity.User;
 import com.testem.maxm.testempro.inapp.tabs.ViewPagerAdapter;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.Iterator;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+
 
 public final class WorkSpace extends AppCompatActivity {
 
@@ -268,7 +282,7 @@ public final class WorkSpace extends AppCompatActivity {
 
     /**
      * Listens to events and completes deeds
-     * @param view
+     * @param view refers to the view was called this method
      */
     public void eventListener (View view) {
         switch (view.getId()) {
@@ -286,7 +300,68 @@ public final class WorkSpace extends AppCompatActivity {
                 setUpUnsuccessfulCheckResult();
                 finish();
                 break;
+            case R.id.download_excel:
+                Intent intent = new Intent(this, FileChooserActivity.class);
+                this.startActivity(intent);
+                break;
+            default:
+                break;
         }
+    }
+
+   private static void readExcelFile(Context context, String filename) {
+
+        if (!isExternalStorageAvailable() || isExternalStorageReadOnly())
+        {
+            Log.w("FileUtils", "Storage not available or read only");
+            return;
+        }
+
+        try{
+            // Creating Input Stream
+            File file = new File(context.getExternalFilesDir(null), filename);
+            FileInputStream myInput = new FileInputStream(file);
+
+            // Create a POIFSFileSystem object
+            POIFSFileSystem myFileSystem = new POIFSFileSystem(myInput);
+
+            // Create a workbook using the File System
+            HSSFWorkbook myWorkBook = new HSSFWorkbook(myFileSystem);
+
+            // Get the first sheet from workbook
+            HSSFSheet mySheet = myWorkBook.getSheetAt(0);
+
+            /** We now need something to iterate through the cells.**/
+            Iterator<Row> rowIter = mySheet.rowIterator();
+
+            while(rowIter.hasNext()){
+                HSSFRow myRow = (HSSFRow) rowIter.next();
+                Iterator<Cell> cellIter = myRow.cellIterator();
+                while(cellIter.hasNext()){
+                    HSSFCell myCell = (HSSFCell) cellIter.next();
+                    Log.w("FileUtils", "Cell Value: " +  myCell.toString());
+                    Toast.makeText(context, "cell Value: " + myCell.toString(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }catch (Exception e){e.printStackTrace(); }
+
+        return;
+    }
+
+    public static boolean isExternalStorageReadOnly() {
+        String extStorageState = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isExternalStorageAvailable() {
+        String extStorageState = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(extStorageState)) {
+            return true;
+        }
+        return false;
     }
 
 }

@@ -20,6 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.testem.maxm.testempro.AuthActivity"  android:noHistory="true"/>
+        <activity android:name=".inapp.fileChooser.FileChooserActivity"/>
     </application>
 
 </manifest>

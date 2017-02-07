@@ -28,6 +28,9 @@ public final class DevelopingTests extends Fragment {
         return view;
     }
 
+    /**
+     * Sets the actions when main floating button is clicked
+     */
     private void setFloatingActionButtons () {
         fabAdd = (FloatingActionButton) view.findViewById(R.id.main_add);
         fabAddTest = (FloatingActionButton) view.findViewById(R.id.add_test);
